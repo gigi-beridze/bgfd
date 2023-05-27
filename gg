@@ -1,0 +1,44 @@
+require('dotenv').config();
+import { Telegraf } from 'telegraf';
+
+const token = process.env.BOT_TOKEN ?? '6009774160:AAEujXWY83pkS7y3H8BNKcnoPh6HTAJS0iI';
+
+if (!token) {
+    throw new Error("Declare BOT_TOKEN in .env file in the root of the project");
+}
+
+const bot = new Telegraf(token);
+
+
+
+
+// Event handler for say hello every new member
+bot.on('new_chat_members', async (ctx: any) => {
+    try {
+        for(const member of ctx.message.new_chat_members){
+            if(member.is_bot === true) {
+                const userName = `<b>${member.username}!</b>`;
+                const welcomeBotMessage = `the bot ${userName} is added`
+                await ctx.reply(welcomeBotMessage, { parse_mode: 'HTML'})
+            } else
+            if(member.username == undefined) {
+                await ctx.reply('Hello User')
+            } else {
+                const userName = `<b>${member.username}!</b>`;
+                const welcomeMessage = `Hello,${userName}  Welcome to our cool group.`
+                await ctx.reply(welcomeMessage, { parse_mode: 'HTML'})
+            }
+        }
+    } catch (error) {
+        console.error('Error handling new chat members:', error)
+    }
+})
+
+
+//TODO: implement the bot ;D
+
+bot.launch();
+
+// Enable graceful stop
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
